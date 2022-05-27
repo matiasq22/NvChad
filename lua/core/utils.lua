@@ -26,15 +26,13 @@ end
 
 nvchad.load_config = function()
    local config = require "core.default_config"
-   local chadrc_exists = vim.fn.filereadable(vim.fn.stdpath "config" .. "/lua/custom/chadrc.lua") == 1
+   local chadrc_exists, chadrc = pcall(require, "custom.chadrc")
 
    if chadrc_exists then
       -- merge user config if it exists and is a table; otherwise display an error
-      local user_config = require "custom.chadrc"
-
-      if type(user_config) == "table" then
+      if type(chadrc) == "table" then
          nvchad.remove_default_keys()
-         config = merge_tb("force", config, user_config)
+         config = merge_tb("force", config, chadrc)
       else
          error "chadrc must return a table!"
       end
@@ -48,19 +46,18 @@ nvchad.remove_default_keys = function()
    local defaults = require "core.default_config"
    local chadrc = require "custom.chadrc"
 
-   local matched_disabled_keys = function(mode, mapping, keybind)
+   local matched_disabled_keys = function(mode, keybind, mode_mapping)
       local disabled_keys = chadrc.mappings.disabled or {}
+
       if vim.tbl_contains(disabled_keys[mode] or {}, keybind) then
-         mapping[keybind] = nil
+         mode_mapping[keybind] = nil
       end
    end
 
-   -- a table of strings + no keys -> un-needed
-
    for _, section_mappings in pairs(defaults.mappings) do
-      for mode, mapping in pairs(section_mappings) do
-         for keybind, _ in pairs(mapping) do
-            matched_disabled_keys(mode, mapping, keybind)
+      for mode, mode_mapping in pairs(section_mappings) do
+         for keybind, _ in pairs(mode_mapping) do
+            matched_disabled_keys(mode, keybind, mode_mapping)
          end
       end
    end
