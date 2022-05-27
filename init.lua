@@ -17,3 +17,5 @@ local user_conf, _ = pcall(require, "custom")
 if user_conf then
    require "custom"
 end
+
+nvchad.load_mappings()
