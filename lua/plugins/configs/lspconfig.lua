@@ -23,7 +23,7 @@ M.on_attach = function(client, bufnr)
    client.resolved_capabilities.document_range_formatting = false
 
    local lsp_mappings = nvchad.load_config().mappings.lspconfig
-   nvchad.load_mappings({ lsp_mappings }, { buffer = bufnr })
+   nvchad.whichKey_map({ lsp_mappings }, { buffer = bufnr })
 end
 
 local capabilities = vim.lsp.protocol.make_client_capabilities()
