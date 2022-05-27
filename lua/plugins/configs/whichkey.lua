@@ -39,6 +39,7 @@ M.setup = function()
       return
    end
 
+   nvchad.whichKey_map()
    wk.setup(M.options)
 end
 

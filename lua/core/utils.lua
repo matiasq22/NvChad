@@ -63,11 +63,16 @@ nvchad.remove_default_keys = function()
    end
 end
 
-nvchad.load_mappings = function(mappings, mapping_opt)
+nvchad.whichKey_map = function(mappings, mapping_opt)
    mappings = mappings or nvchad.load_config().mappings
 
    -- set map function if whichkey exists or no
    local whichkey_exists, wk = pcall(require, "which-key")
+
+   if not whichkey_exists then
+      return
+   end
+
    local default_opts = mapping_opt or {}
 
    for section, section_mappings in pairs(mappings) do
@@ -78,29 +83,47 @@ nvchad.load_mappings = function(mappings, mapping_opt)
 
       for mode, mode_mappings in pairs(section_mappings) do
          for keybind, mapping_info in pairs(mode_mappings) do
-            -- whichkey
+            default_opts = { mode = mode }
+            local opts = merge_tb("force", default_opts, mapping_info.opts or {})
 
-            if whichkey_exists then
-               default_opts = { mode = mode }
-               local opts = merge_tb("force", default_opts, mapping_info.opts or {})
-
-               if mapping_info.opts then
-                  mapping_info.opts = nil
-               end
-
-               local mapping = { [keybind] = mapping_info }
-               wk.register(mapping, opts)
-
-               -- without whichkey
-            else
-               local opts = merge_tb("force", default_opts, mapping_info.opts or {})
-               vim.keymap.set(mode, keybind, mapping_info[1], opts)
+            if mapping_info.opts then
+               mapping_info.opts = nil
             end
+
+            local mapping = { [keybind] = mapping_info }
+            wk.register(mapping, opts)
          end
       end
 
       ::continue::
    end
+end
+
+nvchad.no_WhichKey_map = function(mappings, mapping_opt)
+   mappings = mappings or nvchad.load_config().mappings
+
+   local default_opts = mapping_opt or {}
+
+   for section, section_mappings in pairs(mappings) do
+      -- skip some mappings
+      if section == "lspconfig" then
+         goto continue
+      end
+
+      for mode, mode_mappings in pairs(section_mappings) do
+         for keybind, mapping_info in pairs(mode_mappings) do
+            local opts = merge_tb("force", default_opts, mapping_info.opts or {})
+
+            if mapping_info.opts then
+               mapping_info.opts = nil
+            end
+
+            vim.keymap.set(mode, keybind, mapping_info[1], opts)
+         end
+      end
+   end
+
+   ::continue::
 end
 
 -- load plugin after entering vim ui
