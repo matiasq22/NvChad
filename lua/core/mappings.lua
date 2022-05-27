@@ -33,6 +33,7 @@ M.general = {
 
       -- save
       ["<C-s>"] = { "<cmd> w <CR>", "﬚  save file" },
+      ["<C-x>"] = { "<cmd> wq! <CR>", "﬚  save file and exit" },
 
       -- Copy all
       ["<C-c>"] = { "<cmd> %y+ <CR>", "  copy whole file" },
@@ -69,7 +70,7 @@ M.bufferline = {
       ["<S-Tab>"] = { "<cmd> BufferLineCyclePrev <CR>", "  cycle prev buffer" },
 
       -- close buffer + hide terminal buffer
-      ["<leader>x"] = {
+      ["<C-b>"] = {
          function()
             nvchad.close_buffer()
          end,

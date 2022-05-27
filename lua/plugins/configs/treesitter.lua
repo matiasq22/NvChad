@@ -8,6 +8,9 @@ local options = {
    ensure_installed = {
       "lua",
       "vim",
+      "php",
+      "javascript",
+      "python"
    },
    highlight = {
       enable = true,
